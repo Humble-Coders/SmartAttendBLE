@@ -13,7 +13,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.humblecoders.smartattendance.presentation.components.CameraPermissionHandler
 import com.humblecoders.smartattendance.presentation.viewmodel.AttendanceViewModel
 import com.humblecoders.smartattendance.presentation.viewmodel.ProfileViewModel
 import com.humblecoders.smartattendance.presentation.viewmodel.BleViewModel
@@ -46,12 +45,7 @@ fun AttendanceMarkingScreen(
     var isValidatingAttendance by remember { mutableStateOf(false) }
     var attendanceValidated by remember { mutableStateOf(false) }
 
-    fun stopScanningAndNavigateBack() {
-        Timber.d("🛑 Stopping BLE scanning due to navigation back from attendance screen")
-        bleViewModel.stopScanning()
-        bleViewModel.resetDeviceFound()
-        onNavigateBack()
-    }
+
 
     // Capture device room when screen launches
     LaunchedEffect(Unit) {
@@ -406,7 +400,7 @@ private fun AttendanceErrorContent(
                     Button(
                         onClick = onRetry,
                         modifier = Modifier.weight(1f),
-                        colors = ButtonDefaults.buttonColors(
+                        colors = buttonColors(
                             containerColor = Color(0xFF007AFF)
                         )
                     ) {

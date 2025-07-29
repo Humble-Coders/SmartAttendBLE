@@ -183,23 +183,7 @@ class ProfileViewModel(
         return "Profile: name='${profile.name}', rollNumber='${profile.rollNumber}', className='${profile.className}'"
     }
 
-    /**
-     * Get current class name
-     */
-    fun getCurrentClassName(): String {
-        return profileData.value.className
-    }
 
-    // Method to reload form inputs if needed (optional)
-    fun reloadFormInputs() {
-        viewModelScope.launch {
-            val currentProfile = profileData.first()
-            _nameInput.value = currentProfile.name
-            _rollNumberInput.value = currentProfile.rollNumber
-            _classNameInput.value = currentProfile.className
-            Timber.d("ProfileViewModel - Form inputs reloaded from saved profile")
-        }
-    }
 
     // Validation helpers
     fun isFormValid(): Boolean {
@@ -208,20 +192,7 @@ class ProfileViewModel(
                 _classNameInput.value.isNotBlank()
     }
 
-    /**
-     * Validate form inputs and provide specific error messages
-     */
-    fun validateForm(): Pair<Boolean, String?> {
-        return when {
-            _nameInput.value.isBlank() -> false to "Name is required"
-            _rollNumberInput.value.isBlank() -> false to "Roll number is required"
-            _classNameInput.value.isBlank() -> false to "Class is required"
-            _nameInput.value.length < 2 -> false to "Name must be at least 2 characters"
-            _rollNumberInput.value.length < 3 -> false to "Roll number must be at least 3 characters"
-            _classNameInput.value.length < 2 -> false to "Class must be at least 2 characters"
-            else -> true to null
-        }
-    }
+
 
     override fun onCleared() {
         super.onCleared()

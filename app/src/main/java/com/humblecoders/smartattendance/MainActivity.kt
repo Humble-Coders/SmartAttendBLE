@@ -7,7 +7,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -173,11 +172,5 @@ class MainActivity : ComponentActivity() {
         if (::attendanceViewModel.isInitialized) {
             attendanceViewModel.clearAttendanceData()
         }
-    }
-
-    @Deprecated("Deprecated in Java")
-    override fun onBackPressed() {
-        Timber.d("📱 MainActivity: Back button pressed")
-        super.onBackPressed()
     }
 }

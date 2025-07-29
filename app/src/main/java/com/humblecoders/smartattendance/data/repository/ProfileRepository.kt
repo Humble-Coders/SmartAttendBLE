@@ -6,7 +6,6 @@ import androidx.datastore.preferences.core.*
 import androidx.datastore.preferences.preferencesDataStore
 import com.humblecoders.smartattendance.data.model.ProfileData
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import timber.log.Timber
 
@@ -47,11 +46,6 @@ class ProfileRepository(private val context: Context) {
         }
     }
 
-    // Overloaded method for backward compatibility
-    suspend fun saveProfile(name: String, rollNumber: String) {
-        saveProfile(name, rollNumber, "")
-    }
-
     // Clear all profile data
     suspend fun clearAllProfile() {
         try {
@@ -65,27 +59,5 @@ class ProfileRepository(private val context: Context) {
         }
     }
 
-    // Get current class name
-    suspend fun getCurrentClassName(): String {
-        return try {
-            val profile = profileData.first()
-            profile.className
-        } catch (e: Exception) {
-            Timber.e(e, "ProfileRepository - Failed to get current class name")
-            ""
-        }
-    }
 
-    // Update only class name
-    suspend fun updateClassName(className: String) {
-        try {
-            context.dataStore.edit { preferences ->
-                preferences[CLASS_NAME_KEY] = className
-            }
-            Timber.d("ProfileRepository - Class name updated: '$className'")
-        } catch (e: Exception) {
-            Timber.e(e, "ProfileRepository - Failed to update class name")
-            throw e
-        }
-    }
 }

@@ -135,7 +135,6 @@ class AttendanceViewModel(
                 Timber.d("📡 Calling repository to mark $attendanceType attendance...")
                 val result = attendanceRepository.markAttendance(
                     rollNumber = rollNumber,
-                    studentName = studentName,
                     subject = session.subject,
                     group = className,
                     type = session.type,
@@ -234,7 +233,6 @@ class AttendanceViewModel(
                 Timber.d("📡 Calling repository to mark $attendanceType attendance...")
                 val result = attendanceRepository.markAttendance(
                     rollNumber = rollNumber,
-                    studentName = studentName,
                     subject = session.subject,      // FROM SESSION
                     group = className,              // FROM PROFILE
                     type = session.type,            // FROM SESSION

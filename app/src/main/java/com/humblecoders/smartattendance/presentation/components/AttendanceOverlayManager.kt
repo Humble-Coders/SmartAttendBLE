@@ -1,7 +1,6 @@
 package com.humblecoders.smartattendance.presentation.components
 
 import androidx.compose.runtime.*
-import kotlinx.coroutines.delay
 import timber.log.Timber
 
 enum class OverlayState {
@@ -20,7 +19,7 @@ fun AttendanceOverlayManager(
     onSequenceComplete: () -> Unit
 ) {
     var currentState by remember { mutableStateOf(OverlayState.NONE) }
-    var roomDetectionStartTime by remember { mutableStateOf(0L) }
+    var roomDetectionStartTime by remember { mutableLongStateOf(0L) }
     var pendingClassroomDetected by remember { mutableStateOf(false) }
 
     // Handle incoming overlay state changes

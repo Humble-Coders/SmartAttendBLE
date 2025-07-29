@@ -10,7 +10,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.School
 import androidx.compose.material3.*
 import androidx.compose.material3.ButtonDefaults.buttonColors
-import androidx.compose.material3.ButtonDefaults.outlinedButtonBorder
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -292,7 +291,7 @@ fun LoginScreen(
                             .height(50.dp),
                         enabled = !isSaving && !showSuccess,
                         shape = RoundedCornerShape(12.dp),
-                        colors = ButtonDefaults.buttonColors(
+                        colors = buttonColors(
                             containerColor = if (!isSaving && !showSuccess) {
                                 Color(0xFF007AFF)
                             } else {

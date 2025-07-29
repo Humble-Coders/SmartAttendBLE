@@ -10,7 +10,6 @@ import com.humblecoders.smartattendance.presentation.screens.*
 import com.humblecoders.smartattendance.presentation.viewmodel.AttendanceViewModel
 import com.humblecoders.smartattendance.presentation.viewmodel.BleViewModel
 import com.humblecoders.smartattendance.presentation.viewmodel.ProfileViewModel
-import com.humblecoders.smartattendance.data.model.AttendanceSuccessData
 import com.humblecoders.smartattendance.utils.BluetoothManager
 import timber.log.Timber
 
@@ -198,10 +197,7 @@ fun AppNavigation(
                 backStackEntry.arguments?.getString("deviceRoom") ?: "unknown",
                 "UTF-8"
             )
-            val attendanceId = java.net.URLDecoder.decode(
-                backStackEntry.arguments?.getString("attendanceId") ?: "unknown",
-                "UTF-8"
-            )
+
 
             Timber.d("🧭 Navigating to Success Screen")
             Timber.d("📋 Success data - Roll: $rollNumber, Subject: $subject, Room: $room")
@@ -230,12 +226,7 @@ sealed class Screen(val route: String) {
     object Home : Screen("home")
     object Profile : Screen("profile")
     // In Screen sealed class, update AttendanceMarking to accept device room
-    object AttendanceMarking : Screen("attendance_marking/{deviceRoom}") {
-        fun createRoute(deviceRoom: String = ""): String {
-            val encodedDeviceRoom = java.net.URLEncoder.encode(deviceRoom.ifBlank { "unknown" }, "UTF-8")
-            return "attendance_marking/$encodedDeviceRoom"
-        }
-    }
+    object AttendanceMarking : Screen("attendance_marking/{deviceRoom}")
     object AttendanceSuccess : Screen(
         "attendance_success/{rollNumber}/{subject}/{room}/{type}/{deviceRoom}/{attendanceId}"
     ) {
@@ -255,11 +246,6 @@ sealed class Screen(val route: String) {
             val encodedAttendanceId = java.net.URLEncoder.encode(attendanceId.ifBlank { "unknown" }, "UTF-8")
 
             return "attendance_success/$encodedRollNumber/$encodedSubject/$encodedRoom/$encodedType/$encodedDeviceRoom/$encodedAttendanceId"
-        }
-    }
-    object FaceRegistration : Screen("face_registration/{rollNumber}") {
-        fun createRoute(rollNumber: String): String {
-            return "face_registration/${java.net.URLEncoder.encode(rollNumber, "UTF-8")}"
         }
     }
 }

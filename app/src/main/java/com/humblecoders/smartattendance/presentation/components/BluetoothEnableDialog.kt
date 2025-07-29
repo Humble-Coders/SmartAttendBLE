@@ -11,14 +11,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.humblecoders.smartattendance.utils.BluetoothManager
 import timber.log.Timber
 
@@ -300,104 +298,6 @@ fun BluetoothPermissionInstructionsDialog(
     }
 }
 
-/**
- * Enhanced Bluetooth permission handler with state management
- */
-@Composable
-fun EnhancedBluetoothPermissionHandler(
-    bluetoothManager: BluetoothManager,
-    onPermissionsGranted: () -> Unit,
-    onPermissionsPermanentlyDenied: () -> Unit
-) {
-    var permissionState by remember { mutableStateOf(PermissionState.CHECKING) }
-    var showEnableDialog by remember { mutableStateOf(false) }
-    var showInstructionsDialog by remember { mutableStateOf(false) }
-
-    val lifecycleOwner = LocalLifecycleOwner.current
-
-    // Check initial state
-    LaunchedEffect(Unit) {
-        when {
-            !bluetoothManager.isBluetoothSupported() -> {
-                permissionState = PermissionState.NOT_SUPPORTED
-            }
-            !bluetoothManager.isBluetoothEnabled() -> {
-                permissionState = PermissionState.BLUETOOTH_DISABLED
-                showEnableDialog = true
-            }
-            bluetoothManager.hasRequiredPermissions() -> {
-                permissionState = PermissionState.GRANTED
-                onPermissionsGranted()
-            }
-            bluetoothManager.getPermissionDenialCount() >= 2 -> {
-                permissionState = PermissionState.PERMANENTLY_DENIED
-                showInstructionsDialog = true
-            }
-            else -> {
-                permissionState = PermissionState.NEEDS_PERMISSION
-                requestPermissions(bluetoothManager) { granted ->
-                    if (granted) {
-                        permissionState = PermissionState.GRANTED
-                        onPermissionsGranted()
-                    } else {
-                        if (bluetoothManager.getPermissionDenialCount() >= 2) {
-                            permissionState = PermissionState.PERMANENTLY_DENIED
-                            showInstructionsDialog = true
-                            onPermissionsPermanentlyDenied()
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    // Show Bluetooth enable dialog
-    if (showEnableDialog) {
-        BluetoothEnableDialog(
-            bluetoothManager = bluetoothManager,
-            onBluetoothEnabled = {
-                showEnableDialog = false
-                // Re-check permissions after Bluetooth is enabled
-                if (bluetoothManager.hasRequiredPermissions()) {
-                    permissionState = PermissionState.GRANTED
-                    onPermissionsGranted()
-                } else {
-                    permissionState = PermissionState.NEEDS_PERMISSION
-                    requestPermissions(bluetoothManager) { granted ->
-                        if (granted) {
-                            permissionState = PermissionState.GRANTED
-                            onPermissionsGranted()
-                        }
-                    }
-                }
-            },
-            onCancel = {
-                showEnableDialog = false
-                permissionState = PermissionState.CANCELLED
-            }
-        )
-    }
-
-    // Show instructions dialog
-    if (showInstructionsDialog) {
-        BluetoothPermissionInstructionsDialog(
-            bluetoothManager = bluetoothManager,
-            onDismiss = {
-                showInstructionsDialog = false
-            }
-        )
-    }
-}
-
-private fun requestPermissions(
-    bluetoothManager: BluetoothManager,
-    onResult: (Boolean) -> Unit
-) {
-    bluetoothManager.requestPermissions { granted ->
-        onResult(granted)
-    }
-}
-
 enum class PermissionState {
     CHECKING,
     NEEDS_PERMISSION,
@@ -405,5 +305,4 @@ enum class PermissionState {
     PERMANENTLY_DENIED,
     BLUETOOTH_DISABLED,
     NOT_SUPPORTED,
-    CANCELLED
 }

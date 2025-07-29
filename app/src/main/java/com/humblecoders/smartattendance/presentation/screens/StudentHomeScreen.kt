@@ -34,6 +34,7 @@ import com.humblecoders.smartattendance.presentation.components.BluetoothEnableD
 import com.humblecoders.smartattendance.presentation.components.BluetoothPermissionInstructionsDialog
 import com.humblecoders.smartattendance.utils.AppLifecycleObserver
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.automirrored.filled.MenuBook
 import kotlinx.coroutines.launch
 
 
@@ -159,9 +160,9 @@ fun StudentHomeScreen(
             attendanceViewModel.checkActiveSession { result ->
                 isSessionActive = result.isActive
                 if (result.session != null) {
-                    currentSubject = result.session!!.subject
-                    currentRoom = result.session!!.room
-                    currentType = result.session!!.type
+                    currentSubject = result.session.subject
+                    currentRoom = result.session.room
+                    currentType = result.session.type
 
                     // NEW: Reset attendance marked flag when session changes
                     isAttendanceMarked = false
@@ -588,7 +589,7 @@ fun StudentHomeScreen(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Icon(
-                                    imageVector = Icons.Default.MenuBook,
+                                    imageVector = Icons.AutoMirrored.Filled.MenuBook,
                                     contentDescription = "Subject",
                                     modifier = Modifier.size(16.dp),
                                     tint = Color(0xFF8E8E93)
@@ -691,9 +692,9 @@ fun StudentHomeScreen(
                             attendanceViewModel.checkActiveSession { result ->
                                 isSessionActive = result.isActive
                                 if (result.session != null) {
-                                    currentSubject = result.session!!.subject
-                                    currentRoom = result.session!!.room
-                                    currentType = result.session!!.type
+                                    currentSubject = result.session.subject
+                                    currentRoom = result.session.room
+                                    currentType = result.session.type
                                     isAttendanceMarked = false
 
                                     if (result.isActive) {

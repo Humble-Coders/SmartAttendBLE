@@ -109,14 +109,6 @@ class BluetoothManager(private val activity: ComponentActivity) {
         }
     }
 
-    /**
-     * Check if we should show permission rationale
-     */
-    fun shouldShowPermissionRationale(): Boolean {
-        return getRequiredPermissions().any { permission ->
-            activity.shouldShowRequestPermissionRationale(permission)
-        }
-    }
 
     /**
      * Request Bluetooth permissions
@@ -195,13 +187,6 @@ class BluetoothManager(private val activity: ComponentActivity) {
      * Get permission denial count
      */
     fun getPermissionDenialCount(): Int = permissionDenialCount
-
-    /**
-     * Reset permission denial count
-     */
-    fun resetPermissionDenialCount() {
-        permissionDenialCount = 0
-    }
 
     /**
      * Get Bluetooth state summary for debugging

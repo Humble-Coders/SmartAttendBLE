@@ -16,19 +16,7 @@ data class ActiveSession(
     @PropertyName("date") val date: String, // YYYY-MM-DD format
     @PropertyName("isExtra") val isExtra: Boolean  // NEW FIELD
 
-) {
-    // No-argument constructor required by Firestore
-    constructor() : this(
-        isActive = false,
-        subject = "",
-        room = "",
-        type = "",
-        sessionId = "",
-        date = "",
-        isExtra = false
-
-    )
-}
+)
 
 
 
@@ -45,11 +33,7 @@ data class AttendanceRecord(
     @PropertyName("isExtra") val isExtra: Boolean = false // NEW FIELD
 
 ) {
-    // Helper function to check if attendance is for today
-    fun isToday(): Boolean {
-        val today = LocalDateTime.now().toLocalDate().toString()
-        return date == today
-    }
+
 
     // Helper function to get formatted time
     fun getFormattedTime(): String {
@@ -59,7 +43,7 @@ data class AttendanceRecord(
                 val localDateTime = LocalDateTime.ofInstant(instant, ZoneId.systemDefault())
                 localDateTime.format(DateTimeFormatter.ofPattern("HH:mm"))
             } catch (e: Exception) {
-                "Unknown"
+                    e.message
             }
         } ?: "Unknown"
     }

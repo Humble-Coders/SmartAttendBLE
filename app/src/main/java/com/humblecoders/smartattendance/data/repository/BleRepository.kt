@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import timber.log.Timber
 import android.bluetooth.BluetoothManager as AndroidBluetoothManager
-import android.bluetooth.BluetoothAdapter
+import androidx.core.util.size
 
 class BleRepository(private val context: Context) {
 
@@ -148,7 +148,7 @@ class BleRepository(private val context: Context) {
             return
         }
 
-        val deviceName = peripheral.name ?: return
+        val deviceName = peripheral.name
         Timber.d("📡 Discovered device: $deviceName, RSSI: ${scanResult.rssi}")
 
         // Extract room from device name (e.g., "LT101123" -> "LT101")
@@ -226,7 +226,7 @@ class BleRepository(private val context: Context) {
             // Fallback: Try all available manufacturer data
             val allManufacturerData = scanRecord.manufacturerSpecificData
             if (allManufacturerData != null) {
-                for (i in 0 until allManufacturerData.size()) {
+                for (i in 0 until allManufacturerData.size) {
                     val manufacturerId = allManufacturerData.keyAt(i)
                     val data = allManufacturerData.valueAt(i)
 
@@ -330,19 +330,6 @@ class BleRepository(private val context: Context) {
         }
     }
 
-    /**
-     * Get current target room
-     */
-    fun getCurrentTargetRoom(): String? = targetRoom
-
-    /**
-     * Check if currently scanning for specific room
-     */
-    fun isScanningForRoom(): Boolean = isScanning && targetRoom != null
-
-    /**
-     * Get detected subject code
-     */
     fun getDetectedSubjectCode(): String? = _detectedSubjectCode.value
 
     /**
@@ -361,11 +348,6 @@ class BleRepository(private val context: Context) {
         return detectedRoom?.equals(targetRoom, ignoreCase = true) == true
     }
 
-    fun isBluetoothAvailable(): Boolean {
-        val bluetoothManager = context.getSystemService(Context.BLUETOOTH_SERVICE) as AndroidBluetoothManager
-        val bluetoothAdapter = bluetoothManager.adapter
-        return bluetoothAdapter?.isEnabled == true
-    }
 
     /**
      * Get Bluetooth adapter state

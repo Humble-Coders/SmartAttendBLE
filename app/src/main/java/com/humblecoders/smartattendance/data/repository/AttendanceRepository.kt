@@ -52,7 +52,7 @@ class AttendanceRepository {
                         Timber.w("❌ Room mismatch: session=${session.room}, detected=$extractedRoom")
                         return Result.success(ComprehensiveValidationResult(
                             isValid = false,
-                            reason = "Room mismatch. You are in ${extractedRoom} but session is for ${session.room}"
+                            reason = "Room mismatch. You are in $extractedRoom but session is for ${session.room}"
                         ))
                     }
                     Timber.d("✅ Room validation passed: ${session.room}")
@@ -79,12 +79,12 @@ class AttendanceRepository {
                 ))
             }
 
-            val alreadyMarked = alreadyMarkedResult.getOrNull() ?: false
+            val alreadyMarked = alreadyMarkedResult.getOrNull() == true
             if (alreadyMarked) {
                 Timber.w("⚠️ $attendanceType attendance already marked for today")
                 return Result.success(ComprehensiveValidationResult(
                     isValid = false,
-                    reason = "${attendanceType.capitalize()} attendance already marked for today",
+                    reason = "$attendanceType attendance already marked for today",
                     alreadyMarked = true
                 ))
             }
@@ -157,7 +157,6 @@ class AttendanceRepository {
      */
     suspend fun markAttendance(
         rollNumber: String,
-        studentName: String,
         subject: String,
         group: String,
         type: String,
@@ -171,7 +170,6 @@ class AttendanceRepository {
 
             val result = firebaseRepository.markAttendance(
                 rollNumber = rollNumber,
-                studentName = studentName,
                 subject = subject,
                 group = group,
                 type = type,
@@ -292,13 +290,13 @@ class AttendanceRepository {
                 ))
             }
 
-            val alreadyMarked = alreadyMarkedResult.getOrNull() ?: false
+            val alreadyMarked = alreadyMarkedResult.getOrNull() == true
 
             if (alreadyMarked) {
                 Timber.w("⚠️ $attendanceType attendance already marked for today")
                 return Result.success(AttendanceEligibility(
                     isEligible = false,
-                    reason = "${attendanceType.capitalize()} attendance already marked for today",
+                    reason = "$attendanceType attendance already marked for today",
                     alreadyMarked = true
                 ))
             }

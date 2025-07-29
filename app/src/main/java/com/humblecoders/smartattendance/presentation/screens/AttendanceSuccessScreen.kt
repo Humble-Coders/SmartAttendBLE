@@ -8,6 +8,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.*
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -17,7 +18,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.humblecoders.smartattendance.presentation.viewmodel.AttendanceViewModel
-import com.humblecoders.smartattendance.presentation.viewmodel.BleViewModel
 import kotlinx.coroutines.delay
 import timber.log.Timber
 import java.time.LocalDateTime
@@ -182,9 +182,9 @@ fun AttendanceSuccessScreen(
                                 )
                             }
 
-                            Divider(
-                                color = Color(0xFF34C759).copy(alpha = 0.2f),
-                                thickness = 1.dp
+                            HorizontalDivider(
+                                 thickness = 1.dp,
+                                color = Color(0xFF34C759).copy(alpha = 0.2f)
                             )
 
                             // Subject Information

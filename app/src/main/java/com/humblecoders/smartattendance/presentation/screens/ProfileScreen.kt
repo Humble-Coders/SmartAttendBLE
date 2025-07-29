@@ -4,14 +4,13 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.humblecoders.smartattendance.presentation.viewmodel.ProfileViewModel
 
@@ -21,7 +20,6 @@ fun ProfileScreen(
     profileViewModel: ProfileViewModel,
     onNavigateBack: () -> Unit
 ) {
-    val profileData by profileViewModel.profileData.collectAsState()
     val nameInput by profileViewModel.nameInput.collectAsState()
     val rollNumberInput by profileViewModel.rollNumberInput.collectAsState()
     val classNameInput by profileViewModel.classNameInput.collectAsState()
@@ -56,7 +54,7 @@ fun ProfileScreen(
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
                         Icon(
-                            imageVector = Icons.Default.ArrowBack,
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back"
                         )
                     }

@@ -1,7 +1,6 @@
 package com.humblecoders.smartattendance.data.repository
 
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
 import com.google.firebase.Timestamp
 import com.humblecoders.smartattendance.data.model.*
 import kotlinx.coroutines.tasks.await
@@ -150,7 +149,6 @@ class FirebaseRepository {
     // In FirebaseRepository.kt - Replace the existing method
     suspend fun markAttendance(
         rollNumber: String,
-        studentName: String,
         subject: String,
         group: String,
         type: String,
@@ -177,7 +175,7 @@ class FirebaseRepository {
                 Timber.w("⚠️ $attendanceType attendance already marked for today")
                 return Result.success(AttendanceResponse(
                     success = false,
-                    message = "${attendanceType.capitalize()} attendance already marked for today",
+                    message = "$attendanceType attendance already marked for today",
                     alreadyMarked = true
                 ))
             }
@@ -208,7 +206,7 @@ class FirebaseRepository {
 
             Result.success(AttendanceResponse(
                 success = true,
-                message = "${attendanceType.capitalize()} attendance marked successfully",
+                message = "$attendanceType attendance marked successfully",
                 attendanceId = attendanceId
             ))
 
@@ -320,7 +318,7 @@ class FirebaseRepository {
      */
     suspend fun getAttendanceStats(rollNumber: String, subject: String? = null): Result<AttendanceStats> {
         return try {
-            Timber.d("📊 Calculating attendance stats for $rollNumber" + if (subject != null) " in $subject" else "")
+            Timber.d("null%s", if (subject != null) " in $subject" else "")
 
             val attendanceList = mutableListOf<AttendanceRecord>()
             val now = LocalDateTime.now()
@@ -342,6 +340,7 @@ class FirebaseRepository {
 
                     Timber.d("📊 Month ${targetMonth.year}-${targetMonth.monthValue}: ${monthRecords.size} records")
                 } catch (e: Exception) {
+                    Timber.w(e, "⚠️ Failed to query collection for ${targetMonth.year}-${targetMonth.monthValue}: ${e.message}")
                     Timber.w("⚠️ Collection for ${targetMonth.year}-${targetMonth.monthValue} might not exist")
                 }
             }
