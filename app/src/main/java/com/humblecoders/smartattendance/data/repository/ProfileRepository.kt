@@ -27,7 +27,6 @@ class ProfileRepository(private val context: Context) {
             name = preferences[NAME_KEY] ?: "",
             rollNumber = preferences[ROLL_NUMBER_KEY] ?: "",
             className = preferences[CLASS_NAME_KEY] ?: "",
-            isFaceRegistered = false // Always false since we don't manage this anymore
         )
         Timber.d("ProfileRepository - Reading profile data: name='${profile.name}', rollNumber='${profile.rollNumber}', className='${profile.className}'")
         profile

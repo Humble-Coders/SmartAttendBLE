@@ -14,7 +14,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.humblecoders.smartattendance.presentation.components.CameraPermissionHandler
-import com.humblecoders.smartattendance.presentation.components.FaceIoAuthWebView
 import com.humblecoders.smartattendance.presentation.viewmodel.AttendanceViewModel
 import com.humblecoders.smartattendance.presentation.viewmodel.ProfileViewModel
 import com.humblecoders.smartattendance.presentation.viewmodel.BleViewModel
@@ -43,8 +42,6 @@ fun AttendanceMarkingScreen(
 
     // Local UI state
     var errorMessage by remember { mutableStateOf<String?>(null) }
-    var hasCameraPermission by remember { mutableStateOf(false) }
-    var permissionDenied by remember { mutableStateOf(false) }
     var isProcessingAttendance by remember { mutableStateOf(false) }
     var isValidatingAttendance by remember { mutableStateOf(false) }
     var attendanceValidated by remember { mutableStateOf(false) }
@@ -133,26 +130,6 @@ fun AttendanceMarkingScreen(
         )
     }
 
-    // Handle camera permission
-    CameraPermissionHandler(
-        onPermissionGranted = {
-            Timber.d("📷 Camera permission granted")
-            hasCameraPermission = true
-            permissionDenied = false
-        },
-        onPermissionDenied = {
-            Timber.w("📷 Camera permission denied")
-            permissionDenied = true
-        }
-    )
-
-    // NEW: Perform attendance validation when camera permission is granted
-    LaunchedEffect(hasCameraPermission) {
-        if (hasCameraPermission && !attendanceValidated && !isValidatingAttendance) {
-            Timber.d("📡 Device room before validation: Current=$detectedDeviceRoom, Captured=$capturedDeviceRoom")
-            performAttendanceValidation()
-        }
-    }
 
     // Function to mark attendance with roll number validation only
     fun markAttendanceWithRollNumber(rollNumber: String) {
@@ -242,36 +219,8 @@ fun AttendanceMarkingScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
+            // REPLACE the existing when statement with this simplified version:
             when {
-                permissionDenied -> {
-                    Timber.d("🎬 Showing permission denied content")
-                    PermissionDeniedContent(
-                        onCancel = {
-                            Timber.d("🔙 User cancelled due to permission denial")
-                            onNavigateBack()
-                        },
-                        bleViewModel = bleViewModel,
-                        onNavigateBack = {
-                            Timber.d("🔙 User clicked back from permission denied screen")
-                            // Stop scanning before navigating back
-                            bleViewModel.stopScanning()
-                            bleViewModel.resetDeviceFound()
-                            onNavigateBack()
-                        },
-                        attendanceViewModel = attendanceViewModel
-                    )
-                }
-
-                !hasCameraPermission -> {
-                    Timber.d("🎬 Waiting for camera permission")
-                    LoadingContent(message = "Requesting camera permission...")
-                }
-
-                isValidatingAttendance -> {
-                    Timber.d("🎬 Showing attendance validation content")
-                    LoadingContent(message = "Validating attendance eligibility...")
-                }
-
                 errorMessage != null -> {
                     Timber.d("🎬 Showing error content: $errorMessage")
                     AttendanceErrorContent(
@@ -280,19 +229,21 @@ fun AttendanceMarkingScreen(
                             Timber.d("🔄 User retrying after error")
                             errorMessage = null
                             attendanceValidated = false
-                            if (hasCameraPermission) {
-                                performAttendanceValidation()
-                            }
+                            performAttendanceValidation()
                         },
                         onCancel = {
                             Timber.d("🔙 User cancelled after error")
-                            // Stop scanning before navigating back
                             attendanceViewModel.disableAutoScan()
                             bleViewModel.stopScanning()
                             bleViewModel.resetDeviceFound()
                             onNavigateBack()
                         }
                     )
+                }
+
+                isValidatingAttendance -> {
+                    Timber.d("🎬 Showing attendance validation content")
+                    LoadingContent(message = "Validating attendance eligibility...")
                 }
 
                 isProcessingAttendance -> {
@@ -302,25 +253,22 @@ fun AttendanceMarkingScreen(
 
                 !attendanceValidated -> {
                     Timber.d("🎬 Waiting for attendance validation")
-                    LoadingContent(message = "Preparing authentication...")
+                    LoadingContent(message = "Preparing attendance marking...")
+
+                    // Auto-start validation
+                    LaunchedEffect(Unit) {
+                        performAttendanceValidation()
+                    }
                 }
 
                 else -> {
-                    Timber.d("🎬 Showing Face.io authentication WebView")
-                    FaceIoAuthWebView(
-                        modifier = Modifier.fillMaxSize(),
-                        onAuthenticated = { rollNumber ->
-                            Timber.d("🔥 WEBVIEW CALLBACK TRIGGERED!")
-                            Timber.d("🆔 Authenticated roll number: $rollNumber")
-                            Timber.d("📡 Current Device Room: $detectedDeviceRoom")
-                            Timber.d("📡 Captured Device Room: $capturedDeviceRoom")
-                            markAttendanceWithRollNumber(rollNumber)
-                        },
-                        onError = { error ->
-                            Timber.e("❌ WebView authentication error: $error")
-                            errorMessage = "Face authentication failed: $error"
-                        }
-                    )
+                    // REPLACE Face.io WebView with direct attendance marking
+                    Timber.d("🎬 Marking attendance directly")
+                    LaunchedEffect(Unit) {
+                        markAttendanceWithRollNumber(profileData.rollNumber)
+                    }
+
+                    ProcessingAttendanceContent()
                 }
             }
         }
@@ -396,74 +344,6 @@ private fun ProcessingAttendanceContent() {
         }
     }
 }
-
-@Composable
-private fun PermissionDeniedContent(
-    onCancel: () -> Unit,
-    bleViewModel: BleViewModel,
-    onNavigateBack: () -> Unit,
-    attendanceViewModel: AttendanceViewModel
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Card(
-            colors = CardDefaults.cardColors(
-                containerColor = Color(0xFFFF3B30).copy(alpha = 0.1f)
-            ),
-            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
-        ) {
-            Column(
-                modifier = Modifier.padding(32.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                Text(
-                    text = "📷",
-                    fontSize = 64.sp
-                )
-
-                Text(
-                    text = "Camera Permission Required",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color(0xFF1D1D1F),
-                    textAlign = TextAlign.Center
-                )
-
-                Text(
-                    text = "Face authentication requires camera access to verify your identity and mark attendance.",
-                    fontSize = 16.sp,
-                    color = Color(0xFF8E8E93),
-                    textAlign = TextAlign.Center,
-                    lineHeight = 22.sp
-                )
-
-                Button(
-                    onClick = {
-                        Timber.d("🔙 User cancelled due to permission denial")
-                        // Disable auto-scanning and stop current scanning
-                        attendanceViewModel.disableAutoScan()
-                        bleViewModel.stopScanning()
-                        bleViewModel.resetDeviceFound()
-                        onNavigateBack()
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF007AFF)
-                    )
-                ) {
-                    Text("Go Back", fontWeight = FontWeight.Medium)
-                }
-            }
-        }
-    }
-}
-
 @Composable
 private fun AttendanceErrorContent(
     errorMessage: String,

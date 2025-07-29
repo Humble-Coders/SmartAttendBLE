@@ -427,8 +427,7 @@ class AttendanceViewModel(
 
                 val result = attendanceRepository.saveStudentProfile(
                     rollNumber = profileData.rollNumber,
-                    name = profileData.name,
-                    faceId = if (profileData.isFaceRegistered) "registered" else ""
+                    name = profileData.name
                 )
 
                 if (result.isSuccess) {
@@ -443,63 +442,7 @@ class AttendanceViewModel(
         }
     }
 
-    /**
-     * Update face ID in Firebase after face registration
-     */
-    fun updateFaceIdInFirebase(faceId: String) {
-        viewModelScope.launch {
-            try {
-                Timber.d("🆔 Updating face ID in Firebase...")
 
-                val profileData = profileRepository.profileData.first()
-                val rollNumber = profileData.rollNumber
-
-                if (rollNumber.isBlank()) {
-                    Timber.w("⚠️ Cannot update face ID - no roll number available")
-                    return@launch
-                }
-
-                val result = attendanceRepository.updateStudentFaceId(rollNumber, faceId)
-
-                if (result.isSuccess) {
-                    Timber.d("✅ Face ID updated in Firebase successfully")
-                } else {
-                    Timber.e("❌ Failed to update face ID in Firebase: ${result.exceptionOrNull()}")
-                }
-
-            } catch (e: Exception) {
-                Timber.e(e, "💥 Error updating face ID in Firebase")
-            }
-        }
-    }
-
-    /**
-     * Refresh all attendance data for current student
-     */
-
-    /**
-     * Get today's attendance for display
-     */
-    fun getTodayAttendance(): List<AttendanceRecord> {
-        return _attendanceHistory.value.filter { it.isToday() }
-    }
-
-    /**
-     * Get attendance for specific subject
-     */
-    fun getAttendanceForSubject(subjectCode: String): List<AttendanceRecord> {
-        return _attendanceHistory.value.filter { it.subject == subjectCode }
-    }
-
-    /**
-     * Clear attendance data (for logout/reset)
-     */
-
-
-    /**
-     * Initialize ViewModel - sync profile and load data
-     */
-// In initialize() method, after loadAttendanceStats(), add:
     fun initialize() {
         viewModelScope.launch {
             try {

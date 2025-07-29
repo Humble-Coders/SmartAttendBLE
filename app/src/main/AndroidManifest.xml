@@ -16,9 +16,6 @@
     <!-- Internet for Firebase and Face.io -->
     <uses-permission android:name="android.permission.INTERNET" />
 
-    <!-- Camera permission for Face.io -->
-    <uses-permission android:name="android.permission.CAMERA" />
-
     <!-- BLE Feature -->
     <uses-feature
         android:name="android.hardware.bluetooth_le"

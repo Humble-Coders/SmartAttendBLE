@@ -376,6 +376,7 @@ class FirebaseRepository {
     /**
      * Save or update student profile (keeping for compatibility)
      */
+    // CHANGE the method to remove faceId parameter:
     suspend fun saveStudentProfile(student: Student): Result<String> {
         return try {
             Timber.d("👤 Saving student profile: ${student.rollNumber}")
@@ -393,28 +394,4 @@ class FirebaseRepository {
         }
     }
 
-    /**
-     * Update student's face ID after face registration
-     */
-    suspend fun updateStudentFaceId(rollNumber: String, faceId: String): Result<String> {
-        return try {
-            Timber.d("🆔 Updating face ID for student: $rollNumber")
-
-            val studentsCollection = firestore.collection("students")
-            studentsCollection.document(rollNumber)
-                .update(
-                    mapOf(
-                        "faceId" to faceId,
-                        "updatedAt" to Timestamp.now()
-                    )
-                )
-                .await()
-
-            Timber.d("✅ Face ID updated for student: $rollNumber")
-            Result.success("Face ID updated successfully")
-        } catch (e: Exception) {
-            Timber.e(e, "❌ Failed to update face ID for $rollNumber")
-            Result.failure(e)
-        }
-    }
 }

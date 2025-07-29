@@ -246,13 +246,12 @@ class AttendanceRepository {
     /**
      * Save or update student profile
      */
-    suspend fun saveStudentProfile(rollNumber: String, name: String, faceId: String = ""): Result<String> {
+    suspend fun saveStudentProfile(rollNumber: String, name: String): Result<String> {
         return try {
             Timber.d("👤 Saving student profile for $rollNumber")
             val student = Student(
                 rollNumber = rollNumber,
-                name = name,
-                faceId = faceId
+                name = name
             )
             val result = firebaseRepository.saveStudentProfile(student)
 
@@ -269,31 +268,6 @@ class AttendanceRepository {
         }
     }
 
-    /**
-     * Update face ID for student
-     */
-    suspend fun updateStudentFaceId(rollNumber: String, faceId: String): Result<String> {
-        return try {
-            Timber.d("🆔 Updating face ID for $rollNumber")
-            val result = firebaseRepository.updateStudentFaceId(rollNumber, faceId)
-
-            if (result.isSuccess) {
-                Timber.d("✅ Face ID updated successfully")
-                Result.success(result.getOrNull()!!)
-            } else {
-                Timber.e("❌ Failed to update face ID: ${result.exceptionOrNull()}")
-                Result.failure(result.exceptionOrNull() ?: Exception("Unknown error"))
-            }
-        } catch (e: Exception) {
-            Timber.e(e, "💥 Failed to update face ID")
-            Result.failure(e)
-        }
-    }
-
-    /**
-     * DEPRECATED: Use validateComprehensiveAttendance instead
-     * Validate attendance eligibility (check for duplicates)
-     */
     suspend fun validateAttendanceEligibility(
         rollNumber: String,
         subject: String,

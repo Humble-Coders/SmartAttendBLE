@@ -70,7 +70,6 @@ data class Student(
     @PropertyName("rollNumber") val rollNumber: String = "",
     @PropertyName("name") val name: String = "",
     @PropertyName("email") val email: String = "",
-    @PropertyName("faceId") val faceId: String = "",
     @PropertyName("createdAt") val createdAt: Timestamp = Timestamp.now(),
     @PropertyName("updatedAt") val updatedAt: Timestamp = Timestamp.now()
 )

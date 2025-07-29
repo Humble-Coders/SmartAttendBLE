@@ -147,39 +147,6 @@ fun AppNavigation(
             )
         }
 
-        composable(
-            route = Screen.FaceRegistration.route,
-            arguments = listOf(
-                navArgument("rollNumber") {
-                    type = NavType.StringType
-                    defaultValue = ""
-                }
-            )
-        ) { backStackEntry ->
-            val rollNumber = java.net.URLDecoder.decode(
-                backStackEntry.arguments?.getString("rollNumber") ?: "",
-                "UTF-8"
-            )
-
-            Timber.d("🧭 Navigating to Face Registration Screen for: $rollNumber")
-
-            FaceRegistrationScreen(
-                rollNumber = rollNumber,
-                onRegistrationSuccess = { faceId ->
-                    Timber.d("✅ Face registration successful, navigating back to login")
-                    navController.popBackStack()
-                },
-                onRegistrationError = { error ->
-                    Timber.e("❌ Face registration failed: $error")
-                    navController.popBackStack()
-                },
-                onNavigateBack = {
-                    Timber.d("🔙 Navigating back from face registration")
-                    navController.popBackStack()
-                }
-            )
-        }
-
 
         // Attendance Success Screen
         composable(
